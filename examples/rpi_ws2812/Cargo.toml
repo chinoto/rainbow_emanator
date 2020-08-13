@@ -1,0 +1,11 @@
+[package]
+name = "rpi_ws2812"
+version = "0.1.0"
+authors = ["Damian J Pound <damian@thebestisp.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ws2818-rgb-led-spi-driver = "1.0.0"
+rainbow_emanator = { path = "../../" }
