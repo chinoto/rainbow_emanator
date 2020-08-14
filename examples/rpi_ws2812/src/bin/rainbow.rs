@@ -55,17 +55,33 @@ impl Ws281xColorWriter {
 
     /// Shuffles into GRB and turns every bit into an on or off signal.
     pub fn encode_rgb_array_as_spi([r, g, b]: [u8; 3]) -> impl Iterator<Item = u8> {
-        ArrayVec::from([g, r, b])
-            .into_iter()
-            .flat_map(|component_intensity| {
-                (0..8).rev().flat_map(move |bits| {
-                    // On/Off signals found at https://github.com/phip1611/ws2818-rgb-led-spi-driver/blob/master/src/timings.rs#L55
-                    ArrayVec::from(if component_intensity >> bits & 1 == 0 {
-                        [0b1111_1000, 0b0000_0000]
-                    } else {
-                        [0b1111_1111, 0b1000_0000]
-                    })
+        /// Converts bools from an iterator into bytes.
+        struct Bool2Byte<T: Iterator<Item = bool>>(T);
+        impl<T: Iterator<Item = bool>> Iterator for Bool2Byte<T> {
+            type Item = u8;
+            fn next(&mut self) -> Option<Self::Item> {
+                self.0.next().map(|first_bit| {
+                    (0..8)
+                        .rev()
+                        .zip(std::iter::once(first_bit).chain(self.0.by_ref()))
+                        .fold(0, |acc, (pos, val)| acc | (val as u8) << pos)
                 })
-            })
+            }
+        }
+
+        Bool2Byte(
+            ArrayVec::from([g, r, b])
+                .into_iter()
+                .flat_map(|component_intensity| {
+                    (0..8).rev().flat_map(move |bits| {
+                        use std::iter::repeat;
+                        if component_intensity >> bits & 1 == 0 {
+                            repeat(true).take(5).chain(repeat(false).take(7))
+                        } else {
+                            repeat(true).take(9).chain(repeat(false).take(7))
+                        }
+                    })
+                }),
+        )
     }
 }
