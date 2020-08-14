@@ -7,5 +7,6 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ws2818-rgb-led-spi-driver = "1.0.0"
+spidev = "0.4.0"
 rainbow_emanator = { path = "../../" }
+arrayvec="0.5.1"
