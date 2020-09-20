@@ -12,6 +12,22 @@ This repository is actually inverted from how it began. I initially cloned [ws28
   - Get this to work as the sole program instead of leaning on Linux abstractions.
 
 ## Compiling the Raspberry Pi example
+2020-08-20: Skip everything below the horizontal rule unless you're interested in obscene solutions or want to try running ARM (or other ISAs) executables on x86 without an entire VM. Thanks to [Kjartan Klein's guide](https://github.com/KjartanKlein/CrossCompile) for making any future work I do with the Raspberry Pi much easier.
+
+You can toss the files found [here](https://github.com/raspberrypi/tools/tree/master/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin) anywhere you like and add `export "$LINKER_PATH:$PATH"` to your `~/.profile`. You'll have to log out and back in to have the `$PATH` change take effect or run the export command in the terminal you're building from if you're in a hurry.<br/>
+Run the commands below to tell rust/cargo what to use for linking when building for ARM and install the component to enable building for ARM.
+```bash
+echo -e '[target.arm-unknown-linux-gnueabihf]\nlinker = "arm-linux-gnueabihf-gcc"' >> ~/.cargo/config
+rustup component add arm-unknown-linux-gnueabihf
+```
+When you want an ARM executable to be built, you can tell cargo to do so by either `cargo build --target arm-unknown-linux-gnueabihf` or by creating a project specific `.cargo/config` with the following contents:
+```toml
+[build]
+target = "arm-unknown-linux-gnueabihf"
+```
+
+-----
+
 I tried to get cross compilation to Raspberry Pi working, but unfortunately if you don't use Ubuntu, support is half baked if it exists at all. Instead I decided to virtualize native compiling via the abomination below. Essentially you enter a Raspbian container (via systemd-nspawn or chroot) and have QEMU interpret individual executables rather than virtualize an entire system.
 
 ```bash
