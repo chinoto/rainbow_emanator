@@ -9,4 +9,3 @@ edition = "2018"
 [dependencies]
 spidev = "0.4.0"
 rainbow_emanator = { path = "../../" }
-arrayvec="0.5.1"

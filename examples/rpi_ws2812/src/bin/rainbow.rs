@@ -1,4 +1,3 @@
-use arrayvec::ArrayVec;
 use rainbow_emanator::rainbow_emanator;
 use spidev::{SpiModeFlags, Spidev, SpidevOptions};
 use std::io::{self, Write};
@@ -55,17 +54,15 @@ impl Ws281xColorWriter {
 
     /// Shuffles into GRB and turns every bit into an on or off signal.
     pub fn encode_rgb_array_as_spi([r, g, b]: [u8; 3]) -> impl Iterator<Item = u8> {
-        ArrayVec::from([g, r, b])
-            .into_iter()
-            .flat_map(|component_intensity| {
-                (0..8).rev().flat_map(move |bits| {
-                    // On/Off signals found at https://github.com/phip1611/ws2818-rgb-led-spi-driver/blob/master/src/timings.rs#L55
-                    ArrayVec::from(if component_intensity >> bits & 1 == 0 {
-                        [0b1111_1000, 0b0000_0000]
-                    } else {
-                        [0b1111_1111, 0b1000_0000]
-                    })
-                })
+        IntoIterator::into_iter([g, r, b]).flat_map(|component_intensity| {
+            (0..8).rev().flat_map(move |bits| {
+                // On/Off signals found at https://github.com/phip1611/ws2818-rgb-led-spi-driver/blob/master/src/timings.rs#L55
+                if component_intensity >> bits & 1 == 0 {
+                    [0b1111_1000, 0b0000_0000]
+                } else {
+                    [0b1111_1111, 0b1000_0000]
+                }
             })
+        })
     }
 }
