@@ -1,10 +1,8 @@
 [workspace]
-members = [
-    "examples/rpi_ws2812"
-]
+members = ["examples/rpi_ws2812"]
 
 [package]
-name = "rainbow_emanator"
+name    = "rainbow_emanator"
 version = "0.1.0"
 authors = ["Damian J Pound <damian@thebestisp.com>"]
 edition = "2018"
@@ -12,5 +10,5 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-palette="0.5.0"
-strength_reduce="0.2.3"
+palette         = { version = "0.6.0", default-features = false, features = ["libm"] }
+strength_reduce = "0.2.3"

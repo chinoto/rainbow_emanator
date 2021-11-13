@@ -1,4 +1,5 @@
-use palette::{encoding::srgb::Srgb, rgb::Rgb, Hsv};
+#![no_std]
+use palette::{convert::FromColorUnclamped, encoding::srgb::Srgb, rgb::Rgb, Hsv};
 use strength_reduce::StrengthReducedU32;
 
 /// Provide the width and height of your LED board. If it is a strip, just set
@@ -30,13 +31,13 @@ pub fn rainbow_emanator(width: u32, height: u32, ms: f32) -> impl Iterator<Item 
             ((i / width_div) as f32 - y_factor) * y_div
         };
 
-        let dist: f32 = (x * x + y * y).sqrt();
+        let dist: f32 = palette::float::Float::sqrt(x * x + y * y);
         const TIME_DIV: f32 = 1.0 / 3000.0;
         const VALUE: f32 = 2.0 / 256.0;
         let hsv = Hsv::new((-ms * TIME_DIV + dist * 0.6) * 360.0, 1.0, VALUE);
         let Rgb {
             red, green, blue, ..
-        } = Rgb::<Srgb>::from(hsv).into_format::<u8>();
+        } = Rgb::<Srgb>::from_color_unclamped(hsv).into_format::<u8>();
         [red, green, blue]
     })
 }
