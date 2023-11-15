@@ -1,5 +1,5 @@
 [workspace]
-members = ["examples/rpi_ws2812"]
+members = ["examples/rpi_ws2812", "examples/yew"]
 
 [package]
 name    = "rainbow_emanator"
